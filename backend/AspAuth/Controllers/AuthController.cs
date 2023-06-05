@@ -1,4 +1,6 @@
-﻿using AspAuth.Dtos;
+﻿using AspAuth.Claims;
+using AspAuth.Dtos;
+using AspAuth.Enums;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -16,29 +18,43 @@ namespace AspAuth.Controllers
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignInAsync(UserSignInDto dto)
         {
+            List<Claim> claims;
+            ClaimsIdentity claimsIdentity; 
+
             // Check user credentials in an appropriate way
-            if (dto.Email == "user@server.com" && dto.Password == "12345678")
+            if (dto.Email == "admin@server.com" && dto.Password == "12345678")
             {
-                var claims = new List<Claim>
+                claims = new List<Claim>
                 {
-                    new ("sub", Guid.NewGuid().ToString()),
-                    new ("name", "Peter Pen"),
-                    new ("role", "Admin")
+                    new (Claims.Claims.Sub, Guid.NewGuid().ToString()),
+                    new (Claims.Claims.Name, "Admin Name"),
+                    new (Claims.Claims.Role, Role.Admin.ToString()),
                 };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-                await HttpContext.SignInAsync(claimsPrincipal);
-
-                return Ok();
+            }
+            else if (dto.Email == "user@server.com" && dto.Password == "12345678")
+            {
+                claims = new List<Claim>
+                {
+                    new (Claims.Claims.Sub, Guid.NewGuid().ToString()),
+                    new (Claims.Claims.Name, "User Name"),
+                    new (Claims.Claims.Role, Role.User.ToString()),
+                };
+            }
+            else
+            {
+                return StatusCode(4010);
             }
 
-            return StatusCode(4010);
+            claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+            await HttpContext.SignInAsync(claimsPrincipal);
+
+            return Ok();
         }
 
         [HttpGet("sign-out")]
-        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+        [Authorize(Policy = Policies.Policies.User)]
         public async Task<IActionResult> SignOutAsync()
         {
             try

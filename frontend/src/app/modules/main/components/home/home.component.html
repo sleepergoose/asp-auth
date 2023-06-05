@@ -5,10 +5,13 @@
         </mat-card-header>
         <mat-card-content class="mat-card-content">
             <p *ngFor="let claim of (claims$ | async)">
-                {{ claim.name }} - {{ claim.value }}
+                <b>{{ claim.name }}</b>: {{ claim.value }}
             </p>
+            <mat-divider></mat-divider>
+            <p *ngIf="adminData">{{ adminData.data }}</p>
         </mat-card-content>
         <mat-card-actions class="mat-card-actions">
+            <button mat-raised-button color="accent" (click)="getAdminData()">Admin Data</button>
             <button mat-raised-button color="primary" (click)="logOut()">Log out</button>
         </mat-card-actions>
     </mat-card>
