@@ -1,6 +1,10 @@
+using AspAuth.Claims;
+using AspAuth.Enums;
+using AspAuth.Policies;
 using DotNetEnv;
 using DotNetEnv.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using System.Security.Cryptography.Xml;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,7 +39,25 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Policies.Admin, policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.AddAuthenticationSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
+        policy.RequireClaim(Claims.Role, Role.Admin.ToString());
+    });
+
+    options.AddPolicy(Policies.User, policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.AddAuthenticationSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
+        policy.RequireClaim(Claims.Role, new [] { Role.Admin.ToString(), Role.User.ToString() });
+    });
+
+    options.DefaultPolicy = options.GetPolicy(Policies.User)!;
+});
+
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();

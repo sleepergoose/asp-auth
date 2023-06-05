@@ -24,4 +24,8 @@ export class AuthService {
     getClaims() {
         return this.httpService.getRequest<IClaim[]>(`${this.apiUrl}/users/claims`);
     }
+
+    getAdminData() {
+        return this.httpService.getRequest<object>(`${this.apiUrl}/users/admin-data`);
+    }
 }
