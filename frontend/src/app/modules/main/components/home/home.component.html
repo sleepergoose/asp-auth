@@ -1,0 +1,15 @@
+<div class="container">
+    <mat-card class="mat-card">
+        <mat-card-header class="mat-card-header">
+            <mat-card-title>Values</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="mat-card-content">
+            <p *ngFor="let claim of (claims$ | async)">
+                {{ claim.name }} - {{ claim.value }}
+            </p>
+        </mat-card-content>
+        <mat-card-actions class="mat-card-actions">
+            <button mat-raised-button color="primary" (click)="logOut()">Log out</button>
+        </mat-card-actions>
+    </mat-card>
+</div>

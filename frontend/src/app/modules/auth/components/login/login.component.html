@@ -1,0 +1,30 @@
+<div class="container">
+    <form (submit)="signIn()" [formGroup]="signInForm">
+        <mat-card class="auth-card">
+            <mat-card-header class="card-header">
+                <mat-card-title>Log In</mat-card-title>
+                <mat-card-subtitle class="error-message" *ngIf="errorMessage">{{ errorMessage }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="card-content">
+                <p>
+                    <mat-form-field appearance="fill" class="form-field">
+                        <mat-label>Email</mat-label>
+                        <input matInput placeholder="username@server.com" formControlName="email">
+                    </mat-form-field>
+                </p>
+                <p>
+                    <mat-form-field appearance="fill" class="form-field">
+                        <mat-label>Password</mat-label>
+                        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
+                        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                          </button>
+                    </mat-form-field>
+                </p>
+            </mat-card-content>
+            <mat-card-actions class="card-actions">
+                <button mat-raised-button [disabled]="signInForm.invalid && signInForm.touched" color="primary" type="submit">Login</button>
+              </mat-card-actions>
+        </mat-card>
+    </form>
+</div>
