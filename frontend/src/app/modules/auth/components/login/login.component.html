@@ -3,6 +3,7 @@
         <mat-card class="auth-card">
             <mat-card-header class="card-header">
                 <mat-card-title>Log In</mat-card-title>
+                <mat-card-subtitle class="error-message" *ngIf="errorMessage">{{ errorMessage }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content class="card-content">
                 <p>
@@ -22,7 +23,7 @@
                 </p>
             </mat-card-content>
             <mat-card-actions class="card-actions">
-                <button mat-raised-button color="primary" type="submit">Login</button>
+                <button mat-raised-button [disabled]="signInForm.invalid && signInForm.touched" color="primary" type="submit">Login</button>
               </mat-card-actions>
         </mat-card>
     </form>

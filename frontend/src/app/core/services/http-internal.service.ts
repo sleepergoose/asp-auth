@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 export class HttpInternalService {
 
     constructor(private readonly httpClient: HttpClient) { }
-    
+
     getRequest<T>(url: string) {
         return this.httpClient.get<T>(url, { withCredentials: true });
     }

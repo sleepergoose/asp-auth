@@ -16,12 +16,13 @@ namespace AspAuth.Controllers
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignInAsync(UserSignInDto dto)
         {
-            if (dto.Email is not null && dto.Password is not null)
+            // Check user credentials in an appropriate way
+            if (dto.Email == "user@server.com" && dto.Password == "12345678")
             {
                 var claims = new List<Claim>
                 {
-                    new ("sub", "123"),
-                    new ("name", "Dominic"),
+                    new ("sub", Guid.NewGuid().ToString()),
+                    new ("name", "Peter Pen"),
                     new ("role", "Admin")
                 };
 
@@ -30,10 +31,10 @@ namespace AspAuth.Controllers
 
                 await HttpContext.SignInAsync(claimsPrincipal);
 
-                return Ok(new { result = "Signed in successfully" });
+                return Ok();
             }
 
-            return Ok(new { result = "Error" });
+            return StatusCode(4010);
         }
 
         [HttpGet("sign-out")]

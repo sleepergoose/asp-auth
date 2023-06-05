@@ -8,12 +8,14 @@ namespace AspAuth.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class UsersController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult Get()
+        [HttpGet("claims")]
+        public async Task<IActionResult> GetClaimsAsync()
         {
-            return Ok(new { Controller = "Value", Status = "Success" });
+            var userClaims = await Task.Run(() => User.Claims.Select(x => new { name = x.Type, value = x.Value }));
+
+            return Ok(userClaims);
         }
     }
 }
