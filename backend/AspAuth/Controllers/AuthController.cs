@@ -1,12 +1,10 @@
-﻿using AspAuth.Claims;
-using AspAuth.Dtos;
-using AspAuth.Enums;
+﻿using AspAuth.Dtos;
+using AspAuth.Interfaces;
+using AspAuth.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace AspAuth.Controllers
 {
@@ -15,42 +13,26 @@ namespace AspAuth.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly IAuthService _authService;
+
+        public AuthController(IAuthService authService)
+        {
+            _authService = authService;
+        }
+
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignInAsync(UserSignInDto dto)
         {
-            List<Claim> claims;
-            ClaimsIdentity claimsIdentity; 
+            var claimsPrincipal = _authService.GetAuthPrincipal(dto);
 
-            // Check user credentials in an appropriate way
-            if (dto.Email == "admin@server.com" && dto.Password == "12345678")
+            if (claimsPrincipal is not null)
             {
-                claims = new List<Claim>
-                {
-                    new (Claims.Claims.Sub, Guid.NewGuid().ToString()),
-                    new (Claims.Claims.Name, "Admin Name"),
-                    new (Claims.Claims.Role, Role.Admin.ToString()),
-                };
-            }
-            else if (dto.Email == "user@server.com" && dto.Password == "12345678")
-            {
-                claims = new List<Claim>
-                {
-                    new (Claims.Claims.Sub, Guid.NewGuid().ToString()),
-                    new (Claims.Claims.Name, "User Name"),
-                    new (Claims.Claims.Role, Role.User.ToString()),
-                };
-            }
-            else
-            {
-                return StatusCode(4010);
+                await HttpContext.SignInAsync(claimsPrincipal);
+
+                return Ok();
             }
 
-            claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-            await HttpContext.SignInAsync(claimsPrincipal);
-
-            return Ok();
+            return StatusCode(4010);
         }
 
         [HttpGet("sign-out")]
@@ -59,7 +41,7 @@ namespace AspAuth.Controllers
         {
             try
             {
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignOutAsync("MainCookies");
 
                 return Ok();
             }

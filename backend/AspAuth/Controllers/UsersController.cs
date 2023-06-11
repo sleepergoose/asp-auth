@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,19 @@ namespace AspAuth.Controllers
         [HttpGet("admin-data")]
         public async Task<IActionResult> GetAdminDataAsync()
         {
-            return Ok(await Task.Run(() => new { data = "Just an admin data" }));
+            return Ok(await Task.Run(() => new { data = "Just admin data" }));
+        }
+
+        [Authorize(AuthenticationSchemes = "TempCookies", Policy = Policies.Policies.Guest)]
+        [HttpGet("guest-data")]
+        public async Task<IActionResult> GetGuestDataAsync()
+        {
+            return Ok(await Task.Run(() =>
+            {
+                HttpContext.SignOutAsync("TempCookies");
+
+                return new { data = "Just GUEST data" };
+            }));
         }
     }
 }

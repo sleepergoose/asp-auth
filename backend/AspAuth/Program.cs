@@ -21,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthService();
 builder.Services.AddAuthorizationService();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCustomServices();
 
 var app = builder.Build();
 
