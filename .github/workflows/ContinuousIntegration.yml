@@ -1,0 +1,34 @@
+name: ContinuousIntegration
+
+on:
+  pull_request:
+    branches: [develop]
+  workflow_dispatch:
+
+jobs:
+  build_frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3 
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          path: ./frontend
+      - name: Build Frontend Angular App
+        working-directory: ./frontend
+        run: pnpm build
+        
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Backend
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+      - name: Restore Dependencies
+        working-directory: ./backend
+        run: dotnet restore
+      - name: Build Backend
+        working-directory: ./frontend
+        run: dotnet build --no-restore
+        
